@@ -50,6 +50,10 @@
 							onchange="document.getElementById('form').submit()">
 						<label for="MXrec">MX</label>
 
+						<input type="checkbox" id="NSrec" name="type[]" value="NS" <?php ischecked($recType, "NS") ?>
+							onchange="document.getElementById('form').submit()">
+						<label for="NSrec">NS</label>
+
 						<input type="checkbox" id="TXTrec" name="type[]" value="TXT" <?php ischecked($recType, "TXT") ?>
 							onchange="document.getElementById('form').submit()">
 						<label for="TXTrec">TXT</label>
@@ -66,25 +70,13 @@
 
 						if (isset($domain)) {
 
-							if ($type == "A") {
-								$command = 'dig ' . $domain . ' +short';
-							} else if ($type == "CNAME") {
-								$command = 'dig ' . $domain . " CNAME " . ' +short';
-							} else if ($type == "MX") {
-								$command = 'dig ' . $domain . " MX " . ' +short';
-							} else if ($type == "TXT") {
-								$command = 'dig ' . $domain . " TXT " . ' +short';
-							} else {
-								$command = 'dig ' . $domain . ' +short';
-							}
+							$resolver = "8.8.8.8";
+
+							$command = 'dig ' . $domain . " " . $type . " " . ' +short @' . $resolver;
 
 							$escaped_command = escapeshellcmd($command);
 
 							$output = shell_exec($escaped_command);
-
-							if(empty($output)){
-								$output = "No results.";
-							}
 
 							echo "<div class='answer' id='". $type ."'>";
 							echo "<span>";
@@ -92,19 +84,33 @@
 							if (preg_match("/[a-z]/i", $output) && $type == "A") {
 								$arr = explode("\n", $output);
 								echo "CNAME: ";
-								for ($i = 0; $i <= 3; $i++) {
+								if(!empty($output)){
 									
-									echo $arr[$i];
-									echo "<br>";
+									for ($i = 0; $i <= 3; $i++) {
+										echo $arr[$i];
+										echo "<br>";
+									}
+								}else{
+									$output = "No results.";
 								}
+								
 							} else {
+								if(empty($output)){
+									$output = "No results.";
+								}
 								echo $type . ": ";
-								echo $output;
+
+								if(strlen($output) > 25 && $type != "TXT"){
+									$arr = explode("\n", $output);
+									for ($i = 0; $i <= 3; $i++) {
+										echo $arr[$i];
+										echo "<br>";
+									}
+								}else{
+									echo $output;
+								}
 							}
 
-							if (!empty($domain)) {
-								// echo "Not a valid domain!";
-							}
 							echo "</span>";
 							echo "</div>";
 						}
