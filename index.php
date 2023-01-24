@@ -87,8 +87,10 @@
 								if(!empty($output)){
 									
 									for ($i = 0; $i <= 3; $i++) {
-										echo $arr[$i];
-										echo "<br>";
+										if(!empty($arr[$i])){
+											echo $arr[$i];
+											echo "<br>";
+										}
 									}
 								}else{
 									$output = "No results.";
@@ -100,11 +102,13 @@
 								}
 								echo $type . ": ";
 
-								if(strlen($output) > 25 && $type != "TXT"){
+								if(strstr($output, "\n") && $type != "TXT" ){
 									$arr = explode("\n", $output);
 									for ($i = 0; $i <= 3; $i++) {
-										echo $arr[$i];
-										echo "<br>";
+										if(!empty($arr[$i])){
+											echo $arr[$i];
+											echo "<br>";
+										}
 									}
 								}else{
 									echo $output;
