@@ -13,144 +13,99 @@
 </head>
 
 <body>
+	<?php include "dig.php"; ?>
 
-	<div class="form">
+	<div class="flex-container">
 
-		<form id="form" action="index.php" method="get">
+		<div class="flex-item item1">
 
-			<?php
-			$domain = $_GET["domain"];
-			$recType = $_GET["type"];
 
-			function ischecked($recType, $value)
-			{
-				foreach ($recType as $type) {
-					if ($type == $value) {
-						echo "checked='checked'";
-					}
-				}
-			}
-			?>
+			<form id="form" action="index.php" method="get">
 
-			<div class="inner">
-				<div class="input-outer">
-					<input id="input" class="input" type="text" name="domain" placeholder="Enter Domain"
-						value="<?php echo $domain ?>">
-					<!-- <button class="button" type="submit">Dig</button> -->
+				<?php
+				$domain = $_GET["domain"];
+				$recType = $_GET["type"];
+				?>
 
-					<div class="types">
-						<input type="checkbox" id="Arec" name="type[]" value="A" <?php ischecked($recType, "A") ?>
-							onchange="document.getElementById('form').submit()">
-						<label for="Arec">A</label>
+				<div class="inner">
+					<div class="input-outer">
 
-						<input type="checkbox" id="CNAMErec" name="type[]" value="CNAME" <?php ischecked($recType, "CNAME") ?> onchange="document.getElementById('form').submit()">
-						<label for="CNAMErec">CNAME</label>
+						<div class="inner-flex">
+							<div class="input-flex">
+								<input id="input" class="input" type="text" name="domain" placeholder="Enter Domain"
+									value="<?php echo $domain ?>" />
+								<button class="button" type="submit">Dig</button>
+							</div>
 
-						<input type="checkbox" id="MXrec" name="type[]" value="MX" <?php ischecked($recType, "MX") ?>
-							onchange="document.getElementById('form').submit()">
-						<label for="MXrec">MX</label>
+							<div class="types">
+								<span class="typetext">Type:</span>
+								<input type="checkbox" id="Arec" name="type[]" value="A" <?php ischecked($recType, "A") ?> />
+								<label for="Arec">A</label>
 
-						<input type="checkbox" id="NSrec" name="type[]" value="NS" <?php ischecked($recType, "NS") ?>
-							onchange="document.getElementById('form').submit()">
-						<label for="NSrec">NS</label>
+								<input type="checkbox" id="AAAArec" name="type[]" value="AAAA" <?php ischecked($recType, "AAAA") ?> />
+								<label for="AAAArec">AAAA</label>
 
-						<input type="checkbox" id="TXTrec" name="type[]" value="TXT" <?php ischecked($recType, "TXT") ?>
-							onchange="document.getElementById('form').submit()">
-						<label for="TXTrec">TXT</label>
+								<input type="checkbox" id="CNAMErec" name="type[]" value="CNAME" <?php ischecked($recType, "CNAME") ?> />
+								<label for="CNAMErec">CNAME</label>
+
+								<input type="checkbox" id="MXrec" name="type[]" value="MX" <?php ischecked($recType, "MX") ?> />
+								<label for="MXrec">MX</label>
+
+								<input type="checkbox" id="NSrec" name="type[]" value="NS" <?php ischecked($recType, "NS") ?> />
+								<label for="NSrec">NS</label>
+
+								<input type="checkbox" id="TXTrec" name="type[]" value="TXT" <?php ischecked($recType, "TXT") ?> />
+								<label for="TXTrec">TXT</label>
+							</div>
+						</div>
+
 					</div>
+
+
+
+					<!-- Will add other settings here -->
+
+
+
 				</div>
+			</form>
+		</div>
 
-				<div id="answer-section">
-					<hr>
-					<!-- <div id="answer"> -->
-					<?php
-
-					function dig($domain, $type)
-					{
-
-						if (isset($domain)) {
-
-							$resolver = "8.8.8.8";
-
-							$command = 'dig ' . $domain . " " . $type . " " . ' +short @' . $resolver;
-
-							$escaped_command = escapeshellcmd($command);
-
-							$output = shell_exec($escaped_command);
-
-							echo "<div class='answer' id='". $type ."'>";
-							echo "<span>";
-
-							if (preg_match("/[a-z]/i", $output) && $type == "A") {
-								$arr = explode("\n", $output);
-								echo "CNAME: ";
-								if(!empty($output)){
-									
-									for ($i = 0; $i <= 3; $i++) {
-										if(!empty($arr[$i])){
-											echo $arr[$i];
-											echo "<br>";
-										}
-									}
-								}else{
-									$output = "No results.";
-								}
-								
-							} else {
-								if(empty($output)){
-									$output = "No results.";
-								}
-								echo $type . ": ";
-
-								if(strstr($output, "\n") && $type != "TXT" ){
-									$arr = explode("\n", $output);
-									for ($i = 0; $i <= 3; $i++) {
-										if(!empty($arr[$i])){
-											echo $arr[$i];
-											echo "<br>";
-										}
-									}
-								}else{
-									echo $output;
-								}
-							}
-
-							echo "</span>";
-							echo "</div>";
-						}
-
-					}
-
-					foreach ($recType as $type) {
-						dig($domain, $type);
-						// echo $type."<br />";
-					}
-					?>
-					<!-- </div> -->
-				</div>
-
-				<script>
-					var answer = document.getElementsByClassName('answer');
-					var answerSection = document.getElementById('answer-section');
-					var input = document.getElementById('input');
-					if (!input.value) {
-						Array.prototype.forEach.call(answer, function (element) {
-							element.classList.add('hidden');
-						});
-
-					}
-
-					Array.prototype.forEach.call(answer, function (element) {
-							if(!element.querySelector('span').innerHTML){
-								element.querySelector('span').innerHTML = "No results for " + element.id + " record.";
-							}
-						});
-				</script>
+		<div class="flex-item item2">
+			<div id="answer-section">
+				<!-- <hr class="pc-visible"> -->
+				<?php
+				foreach ($recType as $type) {
+					dig($domain, $type);
+					// echo $type."<br />";
+				}
+				?>
 			</div>
-		</form>
+		</div>
+
 	</div>
+	<script>
+		var answer = document.getElementsByClassName('answer');
+		var answerSection = document.getElementById('answer-section');
+		var input = document.getElementById('input');
 
+		//old code for removin answers one by one
+		// if (!input.value) {
+		// 	Array.prototype.forEach.call(answer, function (element) {
+		// 		element.classList.add('hidden');
+		// 	});
+		// }
 
+		if (!input.value) {
+			answerSection.classList.add('hidden');
+		}
+
+		Array.prototype.forEach.call(answer, function (element) {
+			if (!element.querySelector('span').innerHTML) {
+				element.querySelector('span').innerHTML = "No results for " + element.id + " record.";
+			}
+		});
+	</script>
 </body>
 
 </html>
