@@ -193,6 +193,7 @@ body {
 }
 
 .answer {
+    white-space: pre-wrap;
     width: 99%;
     padding: .5em;
     padding-left: .6em;
